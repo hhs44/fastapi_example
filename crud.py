@@ -64,6 +64,7 @@ def update_dealt(db: Session, record_id: int):
         record = db.query(Record).get(record_id)
         record.dealt = True
         db.add(record)
+        db.commit()
         return {'code': 10000, 'msg': "Success update car's record "}
     except Exception as e:
         print(e)
@@ -80,6 +81,7 @@ def del_record(db: Session, record_id: int):
         record = db.query(Record).get(record_id)
         if record.dealt:
             db.delete(record)
+            db.commit()
             return {'code': 10000, 'msg': " Success del car's record "}
     except Exception as e:
         print(e)

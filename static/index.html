@@ -106,7 +106,7 @@
                 delrecord(record) {
                     if (confirm('确认删除？')) {
                         if (record.dealt) {
-                            fetch('/record/' + record.id + '/', {
+                            fetch('/api/record/' + record.id + '/', {
                                 method: 'DELETE'
                             }).then(resp => resp.json())
                                 .then(json => {
