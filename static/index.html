@@ -74,7 +74,7 @@
             },
             methods: {
                 searchcar: function () {
-                    fetch('/record/?carno=' + this.carno + '&page=' + this.currpage)
+                    fetch('/api/record/?carno=' + this.carno + '&page=' + this.currpage)
                         .then(resp => resp.json())
                         .then((json) => {
                             this.records = json.records
@@ -95,7 +95,7 @@
                         })
                 },
                 getdealt(record) {
-                    fetch('/record/' + record.id + '/', {
+                    fetch('/api/record/' + record.id + '/', {
                         method:'PATCH'
                     }).then(resp => resp.json()).then(json => {
                         if (json.code === 10000){

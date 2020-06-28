@@ -37,7 +37,7 @@ def read_all_record(db: Session, carno: str = '', start: date = None, end: date 
     :param page:
     :return:
     """
-    url = "/record/?"
+    url = "/api/record/?"
     records = db.query(Record)
     if carno:
         records = records.join(Car).filter(or_(
