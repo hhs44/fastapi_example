@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <title>车牌违规查询</title>
+</head>
+<body>
+<div id="app">
+    <form @submit="searchcar" action="" method="post" target="nm_iframe">
+        <div style="width: 100%;margin: 20px;">
+            <input type="text" placeholder="请输入车牌号或车主名" name="carno" v-model="carno">
+            <input type="date" name="start" v-model="start">
+            <input type="date" name="end" v-model="end">
+            <button type="submit" value="Submit">查询</button>
+            <hr>
+        </div>
+    </form>
+    <iframe id="id_iframe" name="nm_iframe" style="display:none;"></iframe>
+    <div class="table-responsive">
+        <table class="table">
+            <tr>
+                <td>车牌号</td>
+                <td>车主</td>
+                <td>违章原因</td>
+                <td>违章日期</td>
+                <td>处罚方式</td>
+                <td>是否受理</td>
+                <td>操作</td>
+            </tr>
+            <tr v-for="record in records">
+                <td>{{ record.car.carno }}</td>
+                <td>{{ record.car.owner }}</td>
+                <td>{{ record.reason }}</td>
+                <td>{{ record.makedate }}</td>
+                <td>{{ record.punish }}</td>
+                <td><span v-if="record.dealt">已受理</span>
+                    <span v-if="!record.dealt">未受理</span></td>
+                <td>
+                    <div class="deal">
+                        <a v-if="!record.dealt" @click.prevent="getdealt(record)"
+                           class="btn btn-primary btn-lg active "
+                           role="button">受理</a>
+                        <button v-else type="button" class="btn btn-lg btn-primary" disabled="disabled">受理</button>
+                        <a @click.prevent="delrecord(record)" class="btn btn-primary btn-lg active "
+                           role="button">删除</a>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <nav aria-label="...">
+            <ul class="pager">
+                <li class="previous"><a @click.prevent='gotonext(previous)'><span aria-hidden="true">&larr;</span>
+                    上一页</a></li>
+                <span>第{{ currpage }}共{{ pagenums }}页</span>
+                <li class="next"><a @click.prevent='gotonext(next)'>下一页 <span aria-hidden="true">&rarr;</span></a></li>
+            </ul>
+        </nav>
+    </div>
+    <script src="https://cdn.bootcdn.net/ajax/libs/vue/2.6.11/vue.min.js"></script>
+    <script>
+        let app = new Vue({
+            el: "#app",
+            data: {
+                records: [],
+                pagenums: 0,
+                currpage: 1,
+                next: null,
+                previous: null,
+                end: '',
+                start: '',
+                carno: ''
+            },
+            methods: {
+                searchcar: function () {
+                    fetch('/record/?carno=' + this.carno + '&page=' + this.currpage)
+                        .then(resp => resp.json())
+                        .then((json) => {
+                            this.records = json.records
+                            this.pagenums = json.count
+                            this.next = json.nexturl
+                            this.previous = json.preurl
+                            this.currpage = json.currpage
+                        })
+                },
+                gotonext(url) {
+                    fetch(url).then(resp => resp.json())
+                        .then((json) => {
+                            this.records = json.records
+                            this.pagenums = json.count
+                            this.next = json.nexturl
+                            this.previous = json.preurl
+                            this.currpage = json.currpage
+                        })
+                },
+                getdealt(record) {
+                    fetch('/record/' + record.id + '/', {
+                        method:'PATCH'
+                    }).then(resp => resp.json()).then(json => {
+                        if (json.code === 10000){
+                            record.dealt = true
+                        }
+                    })
+                },
+                delrecord(record) {
+                    if (confirm('确认删除？')) {
+                        if (record.dealt) {
+                            fetch('/record/' + record.id + '/', {
+                                method: 'DELETE'
+                            }).then(resp => resp.json())
+                                .then(json => {
+                                    if (json.code === 10000) {
+                                        let index = this.records.indexOf(record)
+                                        this.records.splice(index, 1)
+                                    }
+                                })
+                        }else {
+                            alert('不能删除未受理的记录')
+                        }
+                    }
+
+                    }
+                }
+
+            })
+    </script>
+</body>
+</html>
