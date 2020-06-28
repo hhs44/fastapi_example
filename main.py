@@ -1,9 +1,9 @@
 from fastapi import FastAPI, Depends
 from pydantic.schema import date
 from sqlalchemy.orm import Session
-from starlette.requests import Request
-from starlette.responses import FileResponse
-from starlette.staticfiles import StaticFiles
+# from starlette.requests import Request
+# from starlette.responses import FileResponse
+# from starlette.staticfiles import StaticFiles
 
 import crud
 import schemas
@@ -23,17 +23,17 @@ def get_db():
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="static"))
-
-
-@app.get("/")
-async def index(request: Request):
-    """
-
-    :param request:
-    :return:
-    """
-    return FileResponse('./static/index.html')
+# app.mount("/static", StaticFiles(directory="static"))
+#
+#
+# @app.get("/")
+# async def index(request: Request):
+#     """
+#
+#     :param request:
+#     :return:
+#     """
+#     return FileResponse('./static/index.html')
 
 
 @app.get("/api/car", name="获取车辆信息", description="获取所有车辆信息")
