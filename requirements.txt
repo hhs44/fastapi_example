@@ -10,6 +10,6 @@ pydantic==1.5.1
 pydantic-sqlalchemy==0.0.4
 SQLAlchemy==1.3.17
 starlette==0.13.4
-uvicorn==0.11.5
+uvicorn==0.11.7
 websockets==8.1
 zipp==3.1.0
